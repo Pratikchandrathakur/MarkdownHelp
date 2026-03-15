@@ -1,0 +1,5 @@
+{
+  "name": "README Generator",
+  "description": "Convert any unstructured text into a beautiful, readable GitHub README.md instantly using AI.",
+  "requestFramePermissions": []
+}

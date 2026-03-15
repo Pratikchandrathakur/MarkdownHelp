@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ── Design System Variables ───────────────────────────── */
+:root {
+  --emerald-glow: 0 0 20px rgba(52, 211, 153, 0.35);
+  --emerald-glow-lg: 0 0 40px rgba(52, 211, 153, 0.25);
+  --glass-bg: rgba(24, 24, 27, 0.6);
+  --glass-border: rgba(63, 63, 70, 0.5);
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+/* ── Base ───────────────────────────────────────────────── */
+* { font-family: var(--font-sans); }
+
+/* ── Custom Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+/* ── Keyframe Animations ────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(52, 211, 153, 0.4); }
+  50%       { box-shadow: 0 0 22px rgba(52, 211, 153, 0.9); }
+}
+
+@keyframes typing-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes icon-spin-once {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Utility Classes ────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #34d399 0%, #6ee7b7 50%, #a7f3d0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+}
+
+.card-glow {
+  box-shadow: var(--emerald-glow);
+}
+
+.animate-fade-in  { animation: fade-in  0.35s ease both; }
+.animate-slide-up { animation: slide-up 0.4s ease both; }
+.animate-pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
+.animate-toast-in { animation: toast-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+.typing-cursor::after {
+  content: '|';
+  animation: typing-blink 0.9s step-start infinite;
+  color: #34d399;
+  margin-left: 1px;
+}
+
+/* ── Focus ring override ────────────────────────────────── */
+textarea:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.4);
+  transition: box-shadow 0.2s ease;
+}
+
