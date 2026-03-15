@@ -124,49 +124,31 @@ export default function App() {
     abortControllerRef.current = new AbortController();
 
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-          'HTTP-Referer': window.location.href,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'openrouter/free',
-          messages: [
-            { role: 'system', content: getSystemPrompt(mode) },
-            { role: 'user',   content: inputText },
-          ],
-          stream: true,
-        }),
-        signal: abortControllerRef.current.signal,
-      });
+      // Local Template Generation Logic (No API/AI Dependency)
+      const lines = inputText.split('\\n').filter(l => l.trim() !== '');
+      const titleText = lines.length > 0 ? lines[0] : 'Project Title';
+      const descText = lines.length > 1 ? lines.slice(1).join('\\n') : 'Project description goes here.';
 
-      if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      let template = '';
+      if (mode === 'minimal') {
+        template = `# ${titleText}\n\n${descText}\n\n## Installation\n\n\`\`\`bash\nnpm install\n\`\`\`\n\n## Usage\n\n\`\`\`bash\nnpm start\n\`\`\``;
+      } else if (mode === 'detailed') {
+        template = `# ${titleText}\n\n## Description\n${descText}\n\n## Features\n- [ ] Feature 1\n- [ ] Feature 2\n\n## Architecture / Tech Stack\n- React\n- TypeScript\n- Vite\n\n## Prerequisites\n- Node.js\n\n## Installation\n\`\`\`bash\nnpm install\n\`\`\`\n\n## Usage\n\`\`\`bash\nnpm run dev\n\`\`\`\n\n## API Documentation\nDetailed API specs go here.\n\n## Troubleshooting\nCommon issues.\n\n## License\nMIT`;
+      } else if (mode === 'opensource') {
+        template = `# ${titleText}\n\n[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)\n[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)\n\n## Description\n${descText}\n\n## Features\n- Community driven\n- Fast\n\n## Installation\n\`\`\`bash\nnpm install\n\`\`\`\n\n## Usage\n\`\`\`bash\nnpm run dev\n\`\`\`\n\n## Contributing\n1. Fork it\n2. Create your feature branch\n3. Commit your changes\n4. Push to the branch\n5. Create a new Pull Request\n\n## Code of Conduct\nPlease note we have a code of conduct, please follow it in all your interactions with the project.\n\n## License\nMIT License`;
+      } else {
+        template = `# ${titleText}\n\n## Description\n${descText}\n\n## Features\n- Easy to start\n- Beautiful Markdown\n\n## Installation\n\`\`\`bash\nnpm install\n\`\`\`\n\n## Usage\n\`\`\`bash\nnpm start\n\`\`\`\n\n## License\nMIT`;
+      }
 
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('No response body');
-
-      const decoder = new TextDecoder();
-      let full = '';
-
-      while (true) {
+      // Simulate streaming output locally
+      let currentText = '';
+      const chunkSize = 2; // characters per tick
+      
+      for (let i = 0; i < template.length; i += chunkSize) {
         if (abortControllerRef.current?.signal.aborted) break;
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const lines = decoder.decode(value).split('\n');
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const json = JSON.parse(line.slice(6));
-              if (json.choices?.[0]?.delta?.content) {
-                full += json.choices[0].delta.content;
-                setOutputText(full);
-              }
-            } catch { /* skip invalid JSON */ }
-          }
-        }
+        currentText += template.substring(i, i + chunkSize);
+        setOutputText(currentText);
+        await new Promise(r => setTimeout(r, 10)); // simulated 10ms network delay per chunk
       }
     } catch (err: any) {
       if (err.name !== 'AbortError') {
