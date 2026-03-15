@@ -132,7 +132,7 @@ export default function App() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'google/gemini-2.0-flash-001',
+          model: 'google/gemini-2.0-flash-lite-preview-02-05:free',
           messages: [
             { role: 'system', content: getSystemPrompt(mode) },
             { role: 'user',   content: inputText },
